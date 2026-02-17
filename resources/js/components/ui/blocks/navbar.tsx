@@ -18,8 +18,6 @@ import { cva } from 'class-variance-authority';
 
 type Breakpoint = 'md' | 'lg';
 type Layout = 'mobile' | 'desktop';
-type Variant = 'default' | 'float' | 'inset';
-type Placement = 'top' | 'bottom';
 type Side = 'left' | 'right';
 
 interface NavbarContextProps {
@@ -96,9 +94,39 @@ const NavbarProvider = ({
     return (
         <NavbarContext.Provider value={contextValue}>
             <div
-                data-breakpoint={breakpoint}
                 className={cn(
-                    'relative flex min-h-svh w-full flex-col',
+                    'flex min-h-svh w-full flex-col overflow-hidden',
+                    breakpoint === 'md'
+                        ? 'has-data-[variant=float]:md:block'
+                        : 'has-data-[variant=float]:lg:block',
+
+                    // base spacing
+                    breakpoint === 'md' ? 'md:pt-0' : 'lg:pt-0',
+                    breakpoint === 'md'
+                        ? 'has-data-[sticky=true]:md:pt-16'
+                        : 'has-data-[sticky=true]:lg:pt-16',
+
+                    // variant: float
+                    'has-data-[variant=float]:overflow-auto',
+                    breakpoint === 'md'
+                        ? 'has-data-[variant=float]:md:pt-4'
+                        : 'has-data-[variant=float]:lg:pt-4',
+
+                    // variant: inset
+                    'has-data-[variant=inset]:bg-sidebar',
+
+                    // placement: bottom (default)
+                    'has-placement-bottom:pt-0',
+                    'has-placement-bottom:pb-16',
+
+                    // float + bottom
+                    'has-data-[variant=float]:has-placement-bottom:pt-0',
+                    'has-data-[variant=float]:has-placement-bottom:pb-0',
+
+                    // inset + bottom
+                    'has-data-[variant=inset]:has-placement-bottom:pt-6',
+                    'has-data-[variant=inset]:has-placement-bottom:pb-12',
+
                     className,
                 )}
                 {...props}
@@ -107,36 +135,44 @@ const NavbarProvider = ({
     );
 };
 
-const navbarStyle = cva('group relative isolate w-full', {
+const navbarSurfaceStyle = cva('flex w-full items-center', {
     variants: {
         variant: {
-            default: '',
-            float: 'mx-auto w-full max-w-7xl px-4 xl:max-w-(--breakpoint-xl)',
-            inset: 'bg-sidebar',
+            default:
+                'bg-background p-4 placement-top:border-b placement-bottom:border-t',
+            float: 'mx-auto max-w-7xl rounded-xl border bg-sidebar px-4 py-2 shadow-xs',
+            inset: 'bg-sidebar px-6 pt-2',
         },
-        isSticky: {
-            true: 'sticky z-40',
+        sticky: {
+            true: 'fixed z-10',
         },
         placement: {
-            top: 'top-0',
-            bottom: 'bottom-0',
+            top: 'inset-x-0 top-0',
+            bottom: 'inset-x-0 bottom-0',
+        },
+        breakpoint: {
+            md: 'md:flex',
+            lg: 'lg:flex',
         },
     },
     compoundVariants: [
         {
+            sticky: true,
             variant: 'float',
             placement: 'top',
-            className: 'md:pt-4',
+            className: 'top-4',
         },
         {
+            sticky: true,
             variant: 'float',
             placement: 'bottom',
-            className: 'md:pb-4',
+            className: 'bottom-4',
         },
         {
+            sticky: true,
             variant: 'inset',
             placement: 'bottom',
-            className: 'pb-2',
+            className: 'bottom-2',
         },
     ],
     defaultVariants: {
@@ -145,34 +181,12 @@ const navbarStyle = cva('group relative isolate w-full', {
     },
 });
 
-const navbarContentStyle = cva(
-    'relative isolate hidden py-(--navbar-gutter) [--navbar-gutter:--spacing(2.5)]',
-    {
-        variants: {
-            variant: {
-                default: 'border-b px-4',
-                float: 'px-0',
-                inset: 'px-6',
-            },
-            breakpoint: {
-                md: 'md:block',
-                lg: 'lg:block',
-            },
-        },
-        defaultVariants: {
-            breakpoint: 'md',
-        },
-    },
-);
-
-type NavbarProps = React.ComponentProps<'div'> & {
-    isSticky?: boolean;
-    placement?: Placement;
-    variant?: Variant;
-};
+type NavbarProps = React.ComponentProps<'div'> &
+    React.ComponentProps<typeof navbarSurfaceStyle> & {
+        isSticky?: boolean;
+    };
 
 const Navbar = ({
-    children,
     isSticky,
     placement = 'top',
     variant = 'default',
@@ -182,36 +196,32 @@ const Navbar = ({
 }: NavbarProps) => {
     const { breakpoint, isMobile } = useNavbar();
 
+    if (isMobile) return null;
+
     return (
         <div
             ref={ref}
             data-navbar
             data-variant={variant}
             data-placement={placement}
-            data-sticky={isSticky ? 'true' : undefined}
+            data-sticky={
+                variant === 'inset' ? true : isSticky ? 'true' : 'false'
+            }
             className={cn(
-                'peer/navbar relative isolate',
-                navbarStyle({ variant, isSticky, placement }),
-                isMobile && 'hidden',
+                'peer/navbar',
+                navbarSurfaceStyle({
+                    variant,
+                    sticky:
+                        variant === 'inset' || variant === 'default'
+                            ? true
+                            : isSticky,
+                    placement,
+                    breakpoint,
+                }),
                 className,
             )}
             {...props}
-        >
-            <div className={navbarContentStyle({ variant, breakpoint })}>
-                <div
-                    data-navbar-content
-                    className={cn(
-                        'mx-auto w-full max-w-(--breakpoint-2xl) items-center',
-                        breakpoint === 'md' ? 'md:flex' : 'lg:flex',
-                        variant === 'float' &&
-                            'rounded-xl border bg-sidebar px-4 py-(--navbar-gutter) shadow-xs',
-                        variant === 'inset' && 'rounded-xl bg-transparent',
-                    )}
-                >
-                    {children}
-                </div>
-            </div>
-        </div>
+        />
     );
 };
 
@@ -268,7 +278,6 @@ const navbarItemStyle = cva(
 
 interface NavbarItemProps extends React.ComponentProps<typeof Link> {
     isCurrent?: boolean;
-    target?: React.HTMLAttributeAnchorTarget;
 }
 
 const NavbarItem = ({
@@ -312,7 +321,7 @@ const NavbarItem = ({
                                 'absolute rounded-full bg-foreground',
                                 layout === 'mobile'
                                     ? 'end-0 h-9 w-0.5'
-                                    : 'inset-x-0 -bottom-[calc(var(--navbar-gutter)+1px)] h-0.5 w-full',
+                                    : 'inset-x-0 -bottom-1 h-0.5 w-full',
                             )}
                         />
                     )}
@@ -392,24 +401,17 @@ const NavbarMobile = ({
     );
 };
 
-const NavbarInset = ({
-    className,
-    ref,
-    children,
-    ...props
-}: React.ComponentProps<'div'>) => {
+const NavbarInset = ({ className, ...props }: React.ComponentProps<'main'>) => {
     return (
-        <div
-            ref={ref}
-            data-navbar-inset
+        <main
+            data-slot="navbar-inset"
             className={cn(
-                'flex flex-1 flex-col peer-data-[variant=inset]/navbar:bg-sidebar peer-data-[variant=inset]/navbar:p-2 peer-data-[variant=inset]/navbar:pt-0',
+                'relative flex flex-1 flex-col overflow-auto',
+                'peer-data-[variant=float]/navbar:overflow-y-hidden peer-data-[variant=inset]/navbar:m-2 peer-data-[variant=inset]/navbar:-mt-4 peer-data-[variant=inset]/navbar:rounded-xl peer-data-[variant=inset]/navbar:bg-background',
                 className,
             )}
             {...props}
-        >
-            <div className="rounded-xl bg-background">{children}</div>
-        </div>
+        />
     );
 };
 
