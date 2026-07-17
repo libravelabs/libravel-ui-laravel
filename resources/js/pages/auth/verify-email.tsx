@@ -1,8 +1,6 @@
-// Components
 import { Form, Head } from '@inertiajs/react';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/core/button';
-import { Loader } from '@/components/ui/core/loader';
 import AuthLayout from '@/layouts/auth-layout';
 import { logout } from '@/routes';
 import { send } from '@/routes/verification';
@@ -25,8 +23,7 @@ export default function VerifyEmail({ status }: { status?: string }) {
             <Form {...send.form()} className="space-y-6 text-center">
                 {({ processing }) => (
                     <>
-                        <Button isDisabled={processing} tone="secondary">
-                            {processing && <Loader />}
+                        <Button isPending={processing} tone="secondary">
                             Resend verification email
                         </Button>
 

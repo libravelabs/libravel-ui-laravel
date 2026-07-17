@@ -4,7 +4,6 @@ import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/core/button';
 import { Label } from '@/components/ui/core/field';
 import { Input } from '@/components/ui/core/input';
-import { Loader } from '@/components/ui/core/loader';
 import { TextField } from '@/components/ui/core/text-field';
 import AuthLayout from '@/layouts/auth-layout';
 import { login } from '@/routes';
@@ -81,7 +80,6 @@ export default function Register() {
                                 isPending={processing}
                                 data-test="register-user-button"
                             >
-                                {processing && <Loader />}
                                 Create account
                             </Button>
                         </div>

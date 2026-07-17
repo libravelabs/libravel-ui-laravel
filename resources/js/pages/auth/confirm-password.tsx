@@ -3,7 +3,6 @@ import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/core/button';
 import { Label } from '@/components/ui/core/field';
 import { Input } from '@/components/ui/core/input';
-import { Loader } from '@/components/ui/core/loader';
 import { TextField } from '@/components/ui/core/text-field';
 import AuthLayout from '@/layouts/auth-layout';
 import { store } from '@/routes/password/confirm';
@@ -35,10 +34,9 @@ export default function ConfirmPassword() {
                         <div className="flex items-center">
                             <Button
                                 className="w-full"
-                                isDisabled={processing}
+                                isPending={processing}
                                 data-test="confirm-password-button"
                             >
-                                {processing && <Loader />}
                                 Confirm password
                             </Button>
                         </div>

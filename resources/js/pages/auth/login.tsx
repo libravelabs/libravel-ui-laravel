@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/core/button';
 import { Checkbox } from '@/components/ui/core/checkbox';
 import { Label } from '@/components/ui/core/field';
 import { Input } from '@/components/ui/core/input';
-import { Loader } from '@/components/ui/core/loader';
 import { TextField } from '@/components/ui/core/text-field';
 import AuthLayout from '@/layouts/auth-layout';
 import { register } from '@/routes';
@@ -79,18 +78,15 @@ export default function Login({
                                     id="remember"
                                     name="remember"
                                     label="Remember me"
-                                    tabIndex={3}
                                 />
                             </div>
 
                             <Button
                                 type="submit"
                                 className="mt-4 w-full"
-                                tabIndex={4}
-                                isDisabled={processing}
+                                isPending={processing}
                                 data-test="login-button"
                             >
-                                {processing && <Loader />}
                                 Log in
                             </Button>
                         </div>

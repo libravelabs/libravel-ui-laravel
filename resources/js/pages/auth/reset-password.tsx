@@ -3,7 +3,6 @@ import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/core/button';
 import { Label } from '@/components/ui/core/field';
 import { Input } from '@/components/ui/core/input';
-import { Loader } from '@/components/ui/core/loader';
 import { TextField } from '@/components/ui/core/text-field';
 import AuthLayout from '@/layouts/auth-layout';
 import { update } from '@/routes/password';
@@ -69,9 +68,9 @@ export default function ResetPassword({ token, email }: Props) {
                             type="submit"
                             className="mt-4 w-full"
                             isDisabled={processing}
+                            isPending={processing}
                             data-test="reset-password-button"
                         >
-                            {processing && <Loader />}
                             Reset password
                         </Button>
                     </div>

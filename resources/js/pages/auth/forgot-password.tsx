@@ -5,7 +5,6 @@ import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/core/button';
 import { Label } from '@/components/ui/core/field';
 import { Input } from '@/components/ui/core/input';
-import { Loader } from '@/components/ui/core/loader';
 import { TextField } from '@/components/ui/core/text-field';
 import AuthLayout from '@/layouts/auth-layout';
 import { login } from '@/routes';
@@ -45,12 +44,9 @@ export default function ForgotPassword({ status }: { status?: string }) {
                             <div className="my-6 flex items-center justify-start">
                                 <Button
                                     className="w-full"
-                                    isDisabled={processing}
+                                    isPending={processing}
                                     data-test="email-password-reset-link-button"
                                 >
-                                    {processing && (
-                                        <Loader className="h-4 w-4 animate-spin" />
-                                    )}
                                     Email password reset link
                                 </Button>
                             </div>
