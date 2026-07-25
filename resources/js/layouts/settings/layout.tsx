@@ -13,23 +13,31 @@ import type { NavItem } from '@/types';
 
 const sidebarNavItems: NavItem[] = [
     {
-        title: 'Profile',
-        href: edit(),
+        label: 'Profile',
+        link: {
+            href: edit(),
+        },
         icon: null,
     },
     {
-        title: 'Password',
-        href: editPassword(),
+        label: 'Password',
+        link: {
+            href: editPassword(),
+        },
         icon: null,
     },
     {
-        title: 'Two-Factor Auth',
-        href: show(),
+        label: 'Two-Factor Auth',
+        link: {
+            href: show(),
+        },
         icon: null,
     },
     {
-        title: 'Appearance',
-        href: editAppearance(),
+        label: 'Appearance',
+        link: {
+            href: editAppearance(),
+        },
         icon: null,
     },
 ];
@@ -57,8 +65,8 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                     >
                         {sidebarNavItems.map((item, index) => (
                             <Link
-                                key={`${toUrl(item.href)}-${index}`}
-                                href={item.href}
+                                key={`${toUrl(item.link?.href as string)}-${index}`}
+                                href={item.link?.href}
                                 className={cn(
                                     buttonVariants({
                                         tone: 'ghost',
@@ -66,12 +74,14 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                                     }),
                                     'w-full justify-start',
                                     {
-                                        'bg-muted': isCurrentUrl(item.href),
+                                        'bg-muted': isCurrentUrl(
+                                            item.link?.href as string,
+                                        ),
                                     },
                                 )}
                             >
                                 {item.icon && item.icon}
-                                {item.title}
+                                {item.label}
                             </Link>
                         ))}
                     </nav>

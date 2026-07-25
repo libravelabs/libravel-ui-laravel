@@ -17,11 +17,11 @@ import type { BreadcrumbItem, SharedData } from '@/types';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Dashboard',
+        label: 'Dashboard',
         href: dashboard().url,
     },
     {
-        title: 'Profile settings',
+        label: 'Profile settings',
         href: edit().url,
     },
 ];
@@ -58,11 +58,13 @@ export default function Profile({
                     >
                         {({ processing, recentlySuccessful, errors }) => (
                             <>
-                                <TextField isRequired>
+                                <TextField
+                                    isRequired
+                                    defaultValue={auth.user.name}
+                                >
                                     <Label>Name</Label>
 
                                     <Input
-                                        defaultValue={auth.user.name}
                                         name="name"
                                         autoComplete="name"
                                         placeholder="Full name"
@@ -71,12 +73,14 @@ export default function Profile({
                                     <InputError message={errors.name} />
                                 </TextField>
 
-                                <TextField isRequired>
+                                <TextField
+                                    isRequired
+                                    defaultValue={auth.user.email}
+                                >
                                     <Label>Email address</Label>
 
                                     <Input
                                         type="email"
-                                        defaultValue={auth.user.email}
                                         name="email"
                                         autoComplete="username"
                                         placeholder="Email address"

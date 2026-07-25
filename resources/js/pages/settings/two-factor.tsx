@@ -19,7 +19,7 @@ type Props = {
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Two-Factor Authentication',
+        label: 'Two-Factor Authentication',
         href: show.url(),
     },
 ];
